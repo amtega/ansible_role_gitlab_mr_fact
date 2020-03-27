@@ -1,2 +1,71 @@
 ---
 # Role tasks
+
+- block:
+    - name: Get number of merge requests pages
+      uri:
+        url: >-
+          {{ gitlab_mr_fact_api_url
+             + "/merge_requests?scope="
+             + gitlab_mr_fact_scope
+             + "&state="
+             + gitlab_mr_fact_state
+             + "&per_page="
+             + gitlab_mr_fact_max_page_size | string }}
+        method: GET
+        headers:
+          "Private-Token": "{{ gitlab_mr_fact_token }}"
+        return_content: yes
+        validate_certs: "{{ gitlab_mr_fact_validate_certs }}"
+      register: gitlab_mr_fact_get_pages_result
+      no_log: "{{ gitlab_mr_fact_no_log | bool }}"
+
+    - name: Load merge requests info
+      uri:
+        url: >-
+          {{ gitlab_mr_fact_api_url
+             + "/merge_requests?scope="
+             + gitlab_mr_fact_scope
+             + "&state="
+             + gitlab_mr_fact_state
+             + "&page=" + gitlab_mr_fact_page_index | string
+             + "&per_page=" + gitlab_mr_fact_per_page | string }}
+        method: GET
+        headers:
+          "Private-Token": "{{ gitlab_mr_fact_token }}"
+        return_content: yes
+        validate_certs: "{{ gitlab_mr_fact_validate_certs }}"
+      loop: "{{ range(gitlab_mr_fact_total_pages | int) | list }}"
+      loop_control:
+        index_var: gitlab_mr_fact_page_index
+        extended: yes
+        label: >-
+          page {{ gitlab_mr_fact_page_index + 1 }}
+          /
+          {{ ansible_loop.length }}
+      register: gitlab_mr_fact_get_info_result
+      no_log: "{{ gitlab_mr_fact_no_log | bool }}"
+
+    - name: Setup fact with merque requests info
+      set_fact:
+        gitlab_mr_fact: >-
+          {{ gitlab_mr_fact_get_info_result.results
+             | sum(attribute="json", start=[]) }}
+  vars:
+    gitlab_mr_fact_last_link: >-
+      {{ gitlab_mr_fact_get_pages_result.link.split("<")
+         | list
+         | select("search", "rel=.last.")
+         | list
+         | last }}
+
+    gitlab_mr_fact_total_pages: >-
+      {{ gitlab_mr_fact_last_link
+         | regex_replace(".*&page=([0-9]+).*", "\1" ) }}
+
+    gitlab_mr_fact_per_page: >-
+      {{ gitlab_mr_fact_last_link
+         | regex_replace(".*&per_page=([0-9]+).*", "\1" ) }}
+
+  tags:
+    - role::gitlab_mr_fact
