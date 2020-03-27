@@ -1,2 +1,34 @@
 ---
 # Role default lower priority variables
+
+# Gitlab server uri
+
+gitlab_mr_fact_server: https://gitlab.acme.com
+
+# Gitalb server API version tu use
+
+gitlab_mr_fact_api_version: 4
+
+# Gitlab token for user authentication
+
+gitlab_mr_fact_token: mytoken
+
+# Scope of the mr to gather facts. Can be created_by_me, assigned_to_me or all
+
+gitlab_mr_fact_scope: created_by_me
+
+# Get facts with the specified stated
+
+gitlab_mr_fact_state: opened
+
+# Maximum number of projects per page. Usually this limit is hardcoded on server
+
+gitlab_mr_fact_max_page_size: 100
+
+# Validate server certificates
+
+gitlab_mr_fact_validate_certs: yes
+
+# Hide sensitive information
+
+gitlab_mr_fact_no_log: yes
