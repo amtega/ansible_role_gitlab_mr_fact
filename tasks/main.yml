@@ -28,7 +28,7 @@
              + gitlab_mr_fact_scope
              + "&state="
              + gitlab_mr_fact_state
-             + "&page=" + gitlab_mr_fact_page_index | string
+             + "&page=" + (gitlab_mr_fact_page_index + 1) | string
              + "&per_page=" + gitlab_mr_fact_per_page | string }}
         method: GET
         headers:
