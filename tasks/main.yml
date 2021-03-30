@@ -46,7 +46,7 @@
       register: gitlab_mr_fact_get_info_result
       no_log: "{{ gitlab_mr_fact_no_log | bool }}"
 
-    - name: Setup fact with merque requests info
+    - name: Setup fact with merge requests info
       set_fact:
         gitlab_mr_fact: >-
           {{ gitlab_mr_fact_get_info_result.results
