@@ -7,5 +7,5 @@
     - amtega.gitlab_mr_fact
   tasks:
     - name: Assert project facts where gathered
-      assert:
+      ansible.builtin.assert:
         that: gitlab_mr_fact is defined
