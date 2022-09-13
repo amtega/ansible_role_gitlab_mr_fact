@@ -1,9 +1,9 @@
 ---
-# Role tasks
 
-- block:
+- name: Setup gitlab merge request
+  block:
     - name: Get number of merge requests pages
-      uri:
+      ansible.builtin.uri:
         url: >-
           {{ gitlab_mr_fact_api_url
              + "/merge_requests?scope="
@@ -21,7 +21,7 @@
       no_log: "{{ gitlab_mr_fact_no_log | bool }}"
 
     - name: Load merge requests info
-      uri:
+      ansible.builtin.uri:
         url: >-
           {{ gitlab_mr_fact_api_url
              + "/merge_requests?scope="
@@ -47,7 +47,7 @@
       no_log: "{{ gitlab_mr_fact_no_log | bool }}"
 
     - name: Setup fact with merge requests info
-      set_fact:
+      ansible.builtin.set_fact:
         gitlab_mr_fact: >-
           {{ gitlab_mr_fact_get_info_result.results
              | sum(attribute="json", start=[]) }}
